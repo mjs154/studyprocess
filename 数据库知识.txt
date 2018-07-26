@@ -1,0 +1,11 @@
+多表联合：
+ (1)左连接left join或left outer join ：左表为主 行数为左表行数 
+	select * from student right join course on student.ID=course.ID
+ (2)右连接 right join 或 right outer join: 右表为主，行数为右表行数 
+	select * from student right join course on student.ID=course.ID
+	注：以上对应连接表若无匹配数据，则为null。
+ (3)完全外连接 行数为左右表行数的集合 full join 或 full outer join
+	select * from student full join course on student.ID=course.ID
+	完全外连接包含full join左右两表中所有的行，如果右表中某行在左表中没有匹配，则结果中对应行右表的部分全部为空(NULL)，如果左表中某行在右表中没有匹配，则结果中对应行左表的部分全部为空(NULL)。
+ (4)内连接 join 或 inner join
+	

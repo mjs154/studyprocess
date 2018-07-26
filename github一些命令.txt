@@ -1,0 +1,40 @@
+1、git bash 
+    (1)ssh-keygen -t rsa -C "48396855**@qq.com
+	生成ssh密钥，复制所有内容，add github SSHkey
+    (2)ssh -T git@github.com
+	验证ssh连接
+    (3)配置全局信息
+	git config --global user.name "mjs_window"
+	git config --global user.email "48396855**@qq.com"
+     作为提交人信息。
+
+2、客户端上传：
+    (1)右键--->Git Bash Here
+	客户端已安装git，在本地需要创建一个目录，来管理github上的项目。
+    (2)git init
+	初始化git
+    (3)git add README.md
+	本地仓库增加README.md文件
+    (4)git commit -m "first commit"(该处为上传日志)
+    	提交
+    (5)git remote add origin git@github.com:mjs154/studyprocess.git
+       git push -u origin master
+       push代码到服务器上
+3、客户端更新
+     (1)git pull origin master
+	远程仓库文件重新下载，覆盖旧版本。
+4、客户端删除
+     (1) git rm README.md
+	删除服务器文件，本地保留
+     (2)git git commit -m "remove README.md"
+        提交至版本库
+5、版本状态查看
+     (1)git status  
+         状态查看
+     (2)git reset HEAD README.md     
+
+
+
+	
+    
+	
