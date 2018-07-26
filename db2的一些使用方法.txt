@@ -1,0 +1,64 @@
+*****************db2 cmd命令操作*****************
+1、 打开命令行窗口 
+　  #db2cmd 
+2、 打开控制中心
+　 # db2cmd db2cc 
+3、 打开命令编辑器 
+　 db2cmd db2ce 
+
+*****************操作数据库命令*****************
+1、启动数据库实例：
+   #db2start 
+2、停止数据库实例：
+   #db2stop 
+3、创建数据库
+   #db2 create db [dbname]
+4、 连接到数据库
+   #db2 connect to [dbname] user [username] using [password] 
+5、 断开数据库连接 
+　 #db2 connect reset 
+6、列出所有数据库 
+   #db2 list db directory 
+7、列出所有激活的数据库 
+   #db2 list active databases
+8、列出所有数据库配置
+   #db2 get db cfg
+9、删除数据库
+   #db2 drop database [dbname]
+10、kill All
+   #db2 force application all
+   
+*****************操作数据表命令*****************
+1、 列出所有用户表 
+　 #db2 list tables 
+2、列出所有系统表 
+　#db2 list tables for system 
+3、列出所有表 
+　 #db2 list tables for all 
+4、 列出系统表 
+　 #db2 list tables for system 
+5、列出用户表 
+　 #db2 list tables for user 
+6、 列出特定用户表 
+　 #db2 list tables for schema [user] 
+7、 创建一个与数据库中某个表(t2)结构相同的新表(t1) 
+　 #db2 create table t1 like t2 
+8、 将一个表t1的数据导入到另一个表t2 
+   #db2 "insert into t1 select * from t2" 
+9、 查询表 
+　 #db2 "select * from table name where ..." 
+10、 显示表结构 
+　 #db2 describe table tablename 
+11、 修改列 
+　 #db2 alter table [tablename] alter column [columname] set data type varchar(24) 
+
+*****************脚本文件执行命令*****************
+1、 执行脚本文件 
+　 #db2 -tvf scripts.sql 
+	-f 读取输入文件 
+	-t 设置语句终止字符 
+	-v 回送当前命令 
+		如果文件中每个语句是直接以回车结尾，则用-vf即可，加上-t是表示没条语句以“；”结尾。
+
+
+
