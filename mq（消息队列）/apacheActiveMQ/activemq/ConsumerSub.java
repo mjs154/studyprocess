@@ -19,7 +19,7 @@ public class ConsumerSub {
             //3.创建Session
             session = connection.createSession(true,Session.AUTO_ACKNOWLEDGE);
             //4.创建Destination 目的地对象
-            Destination destination = session.createQueue("jms_producer_pub/sub");
+            Destination destination = session.createTopic("jms_producer_pub/sub");
             //5.创建消费者
             messageConsumer = session.createConsumer(destination);
             //6.消费消息

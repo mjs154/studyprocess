@@ -33,10 +33,20 @@
 	(1)git rm * -r   （cd 到你要删除的目录下或者 * 可用“”文件夹名“”代替）  -r 代表 recursively（递归）
 	(2)git git commit -m "remove All"
 	(3)git push
+	暂存区删除，保留文件在当前目录
+	git rm –cached readme.txt
 5、版本状态查看
      (1)git status  
          状态查看
-     (2)git reset HEAD README.md     
+     (2)git reset HEAD README.md  
+6、批量提交
+     (1)git add .  (或者多个文件add操作)
+     (2)git commit -m "批量提交"
+     (3)git push
+
+
+
+	   
 
 
 

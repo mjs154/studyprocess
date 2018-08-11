@@ -22,7 +22,7 @@ public class ProducerPus {
             //3.创建Session会话，该会话用于创建消息生产者、消息消费者和消息等
             session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
             //4.创建Destination 目的地对象
-            Destination destination = session.createQueue("jms_producer_pub/sub");
+            Destination destination = session.createTopic("jms_producer_pub/sub");
             //5.创建消息的生产者
             messageProducer = session.createProducer(destination);
             //6.创建一条消息
