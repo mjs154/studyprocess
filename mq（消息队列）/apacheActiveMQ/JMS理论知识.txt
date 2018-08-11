@@ -1,0 +1,169 @@
+    JMS
+	消息中间件一般有两种传递模式：点对点模式(P2P)和发布-订阅模式(Pub/Sub)。
+	(1)点对点模式
+		Point-to-Point(P2P)我们很容易理解，即生产者和消费者之间的消息往来。 
+		每个消息都被发送到特定的消息队列，接收者从队列中获取消息。队列保留着消息，直到他们被消费或超时。
+		P2P的特点：
+			每个消息只有一个消费者（Consumer）(即一旦被消费，消息就不再在消息队列中)；
+			发送者和接收者之间在时间上没有依赖性，也就是说当发送者发送了消息之后，不管接收者有没有正在运行，它不会影响到消息被发送到队列；
+			接收者在成功接收消息之后需向队列应答成功。
+	(2)发布-订阅模式(Pub/Sub)
+
+		我们可以联想到卖报纸的过程：印刷厂把当天的报纸印好然后送到邮递员手里，邮递员风雨兼程的把报纸送到每一位订阅者手里。由此我们可以看到发布-订阅模式的一些特点：
+		每个消息可以有多个消费者；
+		发布者和订阅者之间有时间上的依赖性。针对某个主题（Topic）的订阅者，它必须创建一个订阅者之后，才能消费发布者的消息，而且为了消费消息，订阅者必须保持运行的状态；	
+      
+	(3)JMS介绍：JMS API 是由 Sun 作为一组接口而提供的。提供了 JMS 功能的产品是通过提供一个实现这些接口的提供者来做到这一点的。开发人员可以通过定义一组消息和一组交换这些消息的客户机应用程序建立 JMS 应用程序。
+		JMS 支持两种消息类型P2P 和Pub/Sub.
+	(4)JMS消息模型：
+		JMS 消息由以下几部分组成：消息头，属性，消息体。
+		消息头（header）：JMS消息头包含了许多字段，它们是消息发送后由JMS提供者或消息发送者产生，用来表示消息、设置优先权和失效时间等等，并且为消息确定路由。
+		属性（property）：由消息发送者产生，用来添加删除消息头以外的附加信息。
+		消息体（body）：由消息发送者产生，JMS中定义了5种消息体：ByteMessage、MapMessage、ObjectMessage、StreamMessage和TextMessage。
+	(5)JMS编程模型：
+		一般来说我们在开发基于JMS协议的客户端由一下几部构成：
+		1) 用JNDI 得到ConnectionFactory对象(连接工厂)；
+		2) 用JNDI 得到目标队列或主题对象，即Destination对象(目的地)；
+		3) 用ConnectionFactory创建Connection 对象；
+		4) 用Connection对象创建一个或多个JMS Session；
+		5) 用Session 和Destination 创建MessageProducer和MessageConsumer；
+		6) 通知Connection 开始传递消息。
+	(6)JMS例子，以activemq为例，核心代码如下，详细参照文件夹mq（消息队列）-->apacheActiveMQ：
+		A)点对点模式
+		生产者：
+	Connection connection = null;
+        Session session = null;
+        MessageProducer messageProducer = null;
+        try{
+            //1.创建ConnectionFactory  连接工厂
+            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://198.181.47.219:61616");
+            //2.创建Connection 连接对象
+            connection = connectionFactory.createConnection();
+            //开启连接
+            connection.start();
+            //3.创建Session会话，该会话用于创建消息生产者、消息消费者和消息等
+            session = connection.createSession(true,Session.AUTO_ACKNOWLEDGE);
+            //4.创建Destination 目的地对象
+            Destination destination = session.createQueue("jms_producer_p2p");
+            //5.创建消息的生产者
+            messageProducer = session.createProducer(destination);
+            //6.创建一条消息
+            ActiveMQObjectMessage msg = (ActiveMQObjectMessage) session.createObjectMessage();
+            msg.setObject(new MessageDto("p2p", "我是点对点模式发布者"));
+            //7.发送消息
+            messageProducer.send(msg);
+            //提交事务
+            session.commit();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            //8.释放资源
+            messageProducer.close();
+            session.close();
+            connection.close();
+        }
+		消费者：
+	Connection connection = null;
+        Session session = null;
+        MessageConsumer messageConsumer = null;
+        try{
+            //1.创建ConnectionFactory
+            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://198.181.47.219:61616");
+            //2.创建Connection
+            connection = connectionFactory.createConnection();
+            connection.start();
+            //3.创建Session
+            session = connection.createSession(true,Session.AUTO_ACKNOWLEDGE);
+            //4.创建Destination 目的地对象
+            Destination destination = session.createQueue("jms_producer_p2p");
+            //5.创建消费者
+            messageConsumer = session.createConsumer(destination);
+            int number = 0;
+            //6.消费消息，最多消费五条
+            while(true){
+                /**
+                 * 接收消息，并且指定超时时间为10s阻塞时间，超时返回null
+                 */
+                ActiveMQObjectMessage msg = (ActiveMQObjectMessage) session.createObjectMessage();
+                msg = (ActiveMQObjectMessage) messageConsumer.receive(10000);
+                if(null != msg){
+                    number ++ ;
+                    MessageDto dto = (MessageDto) msg.getObject();
+                    System.out.println(dto.toString());
+                }
+                if (number > 5)
+                    break;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            //7.释放资源
+            messageConsumer.close();
+            session.close();
+            connection.close();
+        }			
+		B)发布订阅模式
+		生产者：
+	Connection connection = null;
+        Session session = null;
+        MessageProducer messageProducer = null;
+        try {
+            //1.创建ConnectionFactory  连接工厂
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://198.181.47.219:61616");
+            //2.创建Connection 连接对象
+            connection = connectionFactory.createConnection();
+            //开启连接
+            connection.start();
+            //3.创建Session会话，该会话用于创建消息生产者、消息消费者和消息等
+            session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+            //4.创建Destination 目的地对象
+            Destination destination = session.createQueue("jms_producer_pub/sub");
+            //5.创建消息的生产者
+            messageProducer = session.createProducer(destination);
+            //6.创建一条消息
+            ObjectMessage objMessage = session.createObjectMessage(new MessageDto("pub/sub", "我是主题发布者"));
+            //7.发送消息
+            messageProducer.send(objMessage);
+            //提交事务
+            session.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            //8.释放资源
+            messageProducer.close();
+            session.close();
+            connection.close();
+        }	
+		消费者：		
+	Connection connection = null;
+        Session session = null;
+        MessageConsumer messageConsumer = null;
+        try {
+            //1.创建ConnectionFactory
+            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://198.181.47.219:61616");
+            //2.创建Connection
+            connection = connectionFactory.createConnection();
+            connection.start();
+            //3.创建Session
+            session = connection.createSession(true,Session.AUTO_ACKNOWLEDGE);
+            //4.创建Destination 目的地对象
+            Destination destination = session.createQueue("jms_producer_pub/sub");
+            //5.创建消费者
+            messageConsumer = session.createConsumer(destination);
+            //6.消费消息
+            while(true){
+                ActiveMQObjectMessage msg = (ActiveMQObjectMessage) session.createObjectMessage();
+                msg = (ActiveMQObjectMessage) messageConsumer.receive(10000);
+                if(null != msg){
+                    MessageDto dto = (MessageDto) msg.getObject();
+                    System.out.println(dto.toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            //7.释放资源
+            messageConsumer.close();
+            session.close();
+            connection.close();
+        }

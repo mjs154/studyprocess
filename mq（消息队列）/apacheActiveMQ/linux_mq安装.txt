@@ -1,0 +1,11 @@
+(1)首先通过URL:http://activemq.apache.org/activemq-5140-release.html下载；
+	wget -O activemq.tar.gz  https://archive.apache.org/dist/activemq/5.14.0/apache-activemq-5.14.0-bin.tar.gz
+(2)解压activemq压缩包：tar -zvxf ***.tar.gz；
+(3)启动activemq，cd至bin目录，然后执行：./activemq start；
+(4)验证是否启动成功：ps -ef|grep activemq；
+
+(5)查看控制台：http://<IP>:8161/admin/
+	默认用户和密码为admin, 在/ACTIVEMQ_HOME/conf/jetty-realm.properties中配置
+
+(6)停止服务：./activemq stop 
+	
