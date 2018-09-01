@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mjs</groupId>
+    <artifactId>licensing</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>licensing</name>
+    <description>licensing service</description>
+
+    <!--第一部分 maven拉取spring boot2.0.4版本 Starter 达到简化依赖目的-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.4.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+    <!--第二部分 拉取spring web工具包
+     包含
+         ■ org.springframework.boot:spring-boot-starter
+        ■ org.springframework.boot:spring-boot-starter-tomcat
+        ■ org.springframework.boot:spring-boot-starter-validation
+        ■ com.fasterxml.jackson.core:jackson-databind
+        ■ org.springframework:spring-web
+        ■ org.springframework:spring-webmvc
+    几部分工具包
+     -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!-- 该部分 涵盖测试工具包
+    包含
+        ■ junit:junit
+        ■ org.mockito:mockito-core
+        ■ org.hamcrest:hamcrest-core
+        ■ org.hamcrest:hamcrest-library
+        ■ org.springframework:spring-core(excludes commons-logging:commons-logging)
+        ■ org.springframework:spring-test
+     -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <!--第三部分 该部分包含spring boot应用监控工具包 -->
+    <!--<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+        <!--第四部分 增加 与confsvr配置服务交互的依赖 -->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-boot-config-client</artifactId>
+    </dependency>
+</dependencies>
+
+    <build>
+        <plugins>
+            <!-- maven 插件 简化spring boot构建及部署 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
