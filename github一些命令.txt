@@ -51,6 +51,35 @@
    git clone https://github.com/mjs154/springbootconfig.git
    git pull origin master
 
+8、分支管理
+     主分支master,一开始的时候，master分支是一条线，Git用master指向最新的提交，再用HEAD指向master，就能确定当前分支，以及当前分支的提交点;
+     创建新的分支，例如dev时，Git新建了一个指针叫dev，指向master相同的提交，再把HEAD指向dev，就表示当前分支在dev上;
+    (1)分支创建：
+       git checkout -b dev    创建dev分支并切换到dev分支，-b相当于创建并切换；
+       <==>
+       git branch dev
+       git checkout dev
+    (2)分支查看：
+	git branch   当前分支前面标有*号；
+    (3)切换分支：
+        git checkout master
+    (4)分支合并：
+        git merge dev  合并指定分支到当前分支；
+    (5)删除分支
+        git branch -d dev
+   	git branch
+    (6)解决冲突
+       建立新的分支，并且修改了a文件并提交；
+       切换master分支，也修改了a文件；(修改内容不一致)
+       master分支提交a文件时报错；
+       手动解决分支文件冲突，再次提交；
+       
+   
+    
+ 	
+	
+   
+
 
 
 	   
