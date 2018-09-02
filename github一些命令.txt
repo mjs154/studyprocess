@@ -43,6 +43,13 @@
      (1)git add .  (或者多个文件add操作)
      (2)git commit -m "批量提交"
      (3)git push
+7、下载
+  # git config --global user.name "你的名字或昵称"
+  # git config --global user.email "你的邮箱"
+   git init
+   git remote add origin https://github.com/mjs154/springbootconfig.git
+   git clone https://github.com/mjs154/springbootconfig.git
+   git pull origin master
 
 
 
