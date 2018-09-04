@@ -1,0 +1,180 @@
+/*
+需求：现有学生成绩表、实践评分表。若学生实践评分成绩为A,则增加附加分20分，并计算学生的总分及平均分
+*/
+
+
+/*==============================================================*/
+/* DBMS name:      ORACLE Version 11g                           */
+/* Created on:     2018/9/3 17:32:43                            */
+/*==============================================================*/
+
+
+drop table stu_practice cascade constraints;
+
+drop table stu_score cascade constraints;
+
+/*==============================================================*/
+/* Table: stu_practice                                        */
+/*==============================================================*/
+create table stu_practice 
+(
+   stu_id             NUMBER               not null,
+   pra_score          VARCHAR(1),
+   constraint PK_STU_PRACTICE primary key (stu_id)
+);
+
+/*==============================================================*/
+/* Table: stu_score                                           */
+/*==============================================================*/
+create table stu_score 
+(
+   stu_id             NUMBER               not null,
+   chinese            NUMBER,
+   math               NUMBER,
+   english            NUMBER,
+   attach             NUMBER,
+   total              NUMBER,
+   average            NUMBER,
+   opertype           NUMBER,
+   constraint PK_STU_SCORE primary key (stu_id)
+);
+
+--插入测试数据
+insert into stu_score(stu_id,chinese,math,english,opertype) values(1000,50,30,60,0)
+insert into stu_score(stu_id,chinese,math,english,opertype) values(1001,70,80,65,0)
+insert into stu_score(stu_id,chinese,math,english,opertype) values(1002,95,90,96,0)
+insert into stu_score(stu_id,chinese,math,english,opertype) values(1003,65,70,96,0)
+insert into stu_score(stu_id,chinese,math,english,opertype) values(1004,85,70,80,0)
+
+insert into stu_practice(stu_id,  pra_score) values(1001, 'B');
+insert into stu_practice(stu_id,  pra_score) values(1002, 'A');
+insert into stu_practice(stu_id,  pra_score) values(1003, 'A');
+insert into stu_practice(stu_id,  pra_score) values(1004, 'B');
+insert into stu_practice(stu_id,  pra_score) values(1005, 'A');
+
+commit;
+
+--定义包(包可以将任何出现在块声明的语句(过程，函数，游标，类型，变量)放在包中，相当于一个容器，将声明语句放入包中的好处：用户可以从其他PL/SQL块中对其进行引用，因此包为PL/SQL提供了全程变量)
+--语法：
+--create [or replace] package packname /*包头名称*/
+--is[as]
+--PLSQL子程序体
+create or replace package myPackage
+is
+    type stdInfo is record(stu_id varchar(30),pra_score varchar(1)); /*定义组成stdInfo成员变量及类型*/
+    type myArray is table of stdInfo index by binary_integer; /*,index by binary_integer:表myArray自增长*/
+end myPackage;
+
+---定义存储过程计算
+---语法：
+--create [or replace] procedure porname(param)/*存储过程名称*/
+--is[as]       /*is,as在存储过程/函数中没区别,在视图中只能用as不能用is，在游标(CURSOR)中只能用is不能用as;*/
+--PLSQL子程序体；
+create or replace procedure get_comment(commentArray out myPackage.myArray)
+is
+    rs SYS_REFCURSOR;          --声明变量，用来存放查询表返回数据
+    record myPackage.stdInfo;  --声明变量，用来存放表一组数据
+    stu_id number;        --声明变量，学生编号
+    pra_score varchar(1);      --声明变量，课外成绩评分
+    i number;                  --声明变量，commentArray输出下标
+begin
+    open rs for select stu_id,pra_score from stu_practice; --定义游标并且返回根据查询语句返回表信息
+    i :=1;                               --赋默认值
+    /*
+    循环体语法一：
+    LOOP                 循环开始标识
+      statement...       循环执行的语句序列
+    END LOOP;
+    循环游标语法二：
+    FOR v in rs LOOP
+        statement...       循环执行的语句序列
+    END LOOG
+    */
+    LOOP                                 --循环体
+      fetch rs into stu_id,pra_score;       --游标参数rs返回的值
+      exit when rs%NOTFOUND;             --定义跳出循环的条件
+      record.stu_id := stu_id;             --赋值给数组
+      record.pra_score := pra_score;
+      commentArray(i) := record;         --赋值给输出变量
+      i := i+1;
+    end LOOP;
+end get_comment;
+
+create or replace procedure autocomputer(step in number)
+is
+       rsCursor SYS_REFCURSOR;    --声明变量，用在过程中返回结果集
+       commentArray myPackage.myArray; --声明变量，学生课外成绩
+       math number;                    --变量声明，数学分数
+       chinese number;                 --变量声明，语文分数
+       english number;                 --变量声明，英语分数
+       t_attach number;                --变量声明，附加分数，默认0分，临时变量
+       t_total number;                 --变量声明，总分，临时变量
+       t_average number;               --变量声明，平均分，临时变量
+       stu_id number;                  --变量声明，学生ID
+       t_stu_id number;                --变量声明，学生ID，临时变量
+       record myPackage.stdInfo;
+       i number;
+begin
+       i:= 1;
+       get_comment(commentArray); --调用get_comment()的存储过程获取学生课外评分信息
+       OPEN rsCursor for select stu_id,math,chinese,english from stu_score t where t.opertype=opertype;
+       LOOP
+            fetch rsCursor into stu_id,math,chinese,english;  --定义游标并且返回根据查询语句返回表信息
+            exit when rsCursor%NOTFOUND;                     --定义跳出循环的条件
+            t_stu_id := stu_id;
+            t_total := math+chinese+english;                 --计算总分
+            <<SCORE_LOOP>>
+            for i in 1..commentArray.count LOOP              --循环游标
+                t_attach := 0;
+                /*
+                  pl/sql if else语法：
+                  语法1：
+                        if 条件 then
+                           语句1；
+                           语句2；
+                   语法2：
+                        if 条件 then
+                           语句序列1；
+                        else
+                           语句序列2；
+                        end if;
+                    语法3:
+                        if 条件 then
+                           语句；
+                        else if 条件 then
+                           语句；
+                        else
+                           语句；
+                        end if
+
+                */
+                record := commentArray(i);
+                if t_stu_id = record.stu_id then
+                   begin
+                        if record.pra_score = 'A' then
+                           t_attach:= 20;
+                           exit SCORE_LOOP;   --跳出for循环
+                        end if;
+                        end;
+                end if;
+            end LOOP;
+            t_total:= t_total+t_attach;
+            <<continue>>
+            t_average := t_total/3;
+			 --注:在sqlplus可以打印，但需先执行set serveroutput on;
+            dbms_output.put_line('学生编号：'||t_stu_id||'附加分：'||t_attach||'总分：'||t_total||'平均分：'||t_average);
+			/*注：attach命名值不能与表命名值一致，否则更新不成功*/
+            update stu_score t set t.attach=t_attach,t.total=t_total,t.average = t_average,t.opertype=1 where t.stu_id = t_stu_id;
+       end LOOP;
+end autocomputer;
+
+
+--执行
+begin
+autocomputer(0);
+commit;
+end;
+
+
+
+
