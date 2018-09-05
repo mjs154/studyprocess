@@ -1,0 +1,57 @@
+/**
+  需求：求取平均分分数75分及以上的人数
+*/
+
+/*
+  函数语法：
+  create [or replace] function function_name(函数参数列表)  --注：参数有IN,OUT,IN OUT三种类型，IN输入，OUT输出，IN OUT输入亦是输出
+  return datatype --返回类型
+  [is/AS]
+    [declare] ----变量声明
+  PL/SQL代码块；
+  
+  函数可以有返回值！存储过程无。
+*/
+create or replace function getNumByScore(score in number)
+return number
+as
+  tmp_sum number; --声明变量
+begin
+  select count(*) into tmp_sum from stu_score a where a.average > score;
+  return tmp_sum;
+end;
+
+
+set serveroutput on
+declare
+  score number;
+  num number;
+begin
+  score := 10;
+  num := getNumByScore(score);
+  dbms_output.put_line('分数超过'||score||'分的人数有'||num);
+  score := 80;
+  num := getNumByScore(score);
+  dbms_output.put_line('分数超过'||score||'分的人数有'||num);
+end;
+
+/*
+SQL> set serveroutput on
+SQL> declare
+  2    score number;
+  3    num number;
+  4  begin
+  5    score := 10;
+  6    num := getNumByScore(score);
+  7    dbms_output.put_line('分数超过'||score||'分的人数有'||num);
+  8    score := 80;
+  9    num := getNumByScore(score);
+ 10    dbms_output.put_line('分数超过'||score||'分的人数有'||num);
+ 11  end;
+ 12  /
+分数超过10分的人数有5
+分数超过80分的人数有2
+
+PL/SQL 过程已成功完成。
+*/
+
