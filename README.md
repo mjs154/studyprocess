@@ -28,4 +28,9 @@
 0.15	2018-09-25	新增[java技术--java基础知识]
 					(1)泛型；
 					(2)Java中String的了解；	mjs
+0.16	2018-09-29	新增[java技术--java基础知识]
+					(1)Java 依赖注入的理解；
+					(2)Object类的equals和hashCode方法重写；
+					新增[数据结构—逻辑数据结构]哈希表目录	mjs
+
 
