@@ -1,0 +1,52 @@
+
+比特币原始交易解析
+	摘抄至https://blog.csdn.net/g2com/article/details/71513630
+
+01000000  版本号的Little-Endian(反序)格式
+
+01 输入未花费交易(UTXO)的数量
+
+
+96c472ac5cbc3cf6acae1493d4d32f119f39ec9e440176b2fb7de6e6024b9f21  上一笔交易输出的哈希
+
+
+
+01000000 该笔在上一笔交易输出所在的位置output_no，Little-Endian格式。
+
+6a 该端数据为其后面紧随的scriptSig,即解锁脚本的字节数，十六进制格式 0110 1010 为十进制 106
+
+47 将47个字节的数据压入栈中
+
+3044022034519a85fb5299e180865dda936c5d53edabaaf6d15cd1740aac9878b76238e002207345fcb5a62deeb8d9d80e5b412bd24d09151c2008b7fef10eb5f13e484d1e0d
+---签名部分，解锁脚本scriptSig的第一部分
+
+
+01  SIGHSH_ALL指令，为了保护签名部分不被篡改
+
+21  将21个字节的数据压入栈中
+
+
+0207c9ece04a9b5ef3ff441f3aad6bb63e323c05047a820ab45ebbe61385aa7446 Big-Endian格式的公钥，解锁脚本的第二部分
+
+ffffffff    顺序编号，在该笔交易中为不可用。如果locktime为非零，则至少一笔输入交易的顺序编号必须小于0xfffffff
+
+01  输出交易的数量
+
+40420f0000000000  交易的数额，Little-Endian格式
+
+19  上锁脚本（P2PKH）的大小。后面为该脚本的内容
+
+76  OP_DUP，上锁脚本scriptPubKey的一部分
+
+a9  OP_HASH160，上锁脚本scriptPubKey的一部分
+
+14  PUSHDATA 14,将14个字节压入栈中，上锁脚本scriptPubKey的一部分
+
+053496c1ea3d54d649ed54de490fda3425222440  接收方公钥的哈希，其结果为RIPEMD160(SHA256(pubkey))
+
+88  OP_EQUALVERIFY，上锁脚本scriptPubKey的一部分
+
+
+ac  OP_CHECKSIG，上锁脚本scriptPubKey的一部分
+
+00000000  nLockTime，可以为UNIX时间戳或者区块高度。在达到这个数值之前，该笔交易不可被添加进区块。若nLockTime为0则表示该交易可以被立刻执行。
