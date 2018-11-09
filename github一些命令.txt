@@ -73,6 +73,16 @@
        切换master分支，也修改了a文件；(修改内容不一致)
        master分支提交a文件时报错；
        手动解决分支文件冲突，再次提交；
+    (7)提交分支至远程
+	git push origin dev
+
+9、撤销commit，但未push的命令
+    (1)查看日志，找到需撤销的id
+	git log
+    (2)撤销，并将代码恢复到前commit id的版本
+	git reset -hard id
+    (3)撤销，但是不会对代码修改进行撤销
+	git reset id
        
    
     
