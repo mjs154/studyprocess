@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+    <!-- diskStore ehcache的磁盘存储路径  java中System.getProperty("user.dir")获取工作；路径
+        java.io.tmpdir：默认的临时文件存放路径。
+        user.home：用户的主目录。
+        user.dir：用户的当前工作目录，即当前程序所对应的工作路径。
+     -->
+    <!--<diskStore path="D:/ehcache/diskStore" />-->
+    <!--
+       name:缓存名称。
+       maxElementsInMemory：缓存最大个数。
+       eternal:对象是否永久有效，一但设置了，timeout将不起作用。
+       timeToIdleSeconds：设置对象在失效前的允许闲置时间（单位：秒）。仅当eternal=false对象不是永久有效时使用，可选属性，默认值是0，也就是可闲置时间无穷大。
+       timeToLiveSeconds：设置对象在失效前允许存活时间（单位：秒）。最大时间介于创建时间和失效时间之间。仅当eternal=false对象不是永久有效时使用，默认是0.，也就是对象存活时间无穷大。
+       overflowToDisk：当内存中对象数量达到maxElementsInMemory时，Ehcache将会对象写到磁盘中
+     -->
+    <defaultCache
+            maxElementsInMemory="500"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="1200"
+            overflowToDisk="true">
+    </defaultCache>
+     <!--
+     peerDiscovery 方式：atutomatic 为自动
+     mulicastGroupAddress 广播组地址：230.0.0.1
+     mulicastGroupPort 广播组端口：40001
+     timeToLive是指搜索范围：0是同一台服务器，1是同一个子网，32是指同一站点，64是指同一块地域，128是同一块大陆，还有个256，我就不说了
+     hostName：主机名或者ip，用来接受或者发送信息的接口
+     -->
+    <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,
+        multicastGroupPort=4446, timeToLive=32,hostName=192.168.1.101" />
+    <!-- cacheManagerPeerProviderFactory标识其他节点
+        class 节点发现方式的类
+            "net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory" RMI组播方式
+            "net.sf.ehcache.distribution.jgroups.JGroupsCacheManagerPeerProviderFactory" JGroups方式
+       properties 属性
+                 (1)RMI手工方式 "hostName=localhost, port=4567, socketTimeoutMillis=2000, peerDiscovery=manual, rmiUrls=//192.168.0.12:4567/oschina_cache|//192.168.0.13:4567/oschina_cache"
+         (2)RMI自动发现 "peerDiscovery=automatic,multicastGroupAddress=230.0.0.1,multicastGroupPort=4446"
+         (3)jGroups组播方式 "connect=UDP(mcast_addr=224.1.1.1;mcast_port=45678;ip_ttl=32;mcast_send_buf_size=120000;mcast_recv_buf_size=80000):
+                                                    PING(timeout=2000;num_initial_members=2):
+                                                    MERGE2(min_interval=5000;max_interval=10000):
+                                                    FD_SOCK:VERIFY_SUSPECT(timeout=1500):
+                                                    pbcast.NAKACK(retransmit_timeout=3000):
+                                                    UNICAST(timeout=5000):
+                                                    pbcast.STABLE(desired_avg_gossip=20000):
+                                                    FRAG:
+                                                    pbcast.GMS(join_timeout=5000;print_local_addr=true)"
+         (4)jGroup单播方式 "connect=TCP(bind_addr=127.0.0.1;bind_port=4000):
+                                                     TCPPING(initial_hosts=127.0.0.1[4000],127.0.0.1[5000];port_range=1;timeout=5000;num_initial_members=2):
+                                                     MERGE2(min_interval=3000;max_interval=5000):
+                                                     FD_ALL(interval=5000;timeout=20000):
+                                                     FD(timeout=5000;max_tries=48;):
+                                                     VERIFY_SUSPECT(timeout=1500):
+                                                     pbcast.NAKACK(retransmit_timeout=100,200,300,600,1200,2400,4800;discard_delivered_msgs=true):
+                                                     pbcast.STABLE(stability_delay=1000;desired_avg_gossip=20000;max_bytes=0):
+                                                     pbcast.GMS(print_local_addr=true;join_timeout=5000)"
+     -->
+    <cacheManagerPeerListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+            properties="hostName=192.168.1.101, port=40001,socketTimeoutMillis=2000" />
+    <!-- 创建缓存名称
+        (有两种，一种本地缓存，一种网络缓存)
+        name 缓存名称
+        maxEntriesLocalHeap 允许在内存中存放元素的最大数量
+        eternal 是否永久(true 不过期过期)
+        timeToIdleSeconds 单位是秒，表示一个元素所允许闲置的最大时间，也就是说一个元素在不被请求的情况下允许在缓存中待的最大时间。默认是0，表示不限制
+        timeToLiveSeconds 单位是秒，表示无论一个元素闲置与否，其允许在Cache中存在的最大时间。默认是0，表示不限制。
+        overflowToDisk 当内存里面的缓存已经达到预设的上限时是否允许将按驱除策略驱除的元素保存在硬盘上。
+      -->
+    <cache name="userCache" maxEntriesLocalHeap="100" eternal="true"
+           timeToIdleSeconds="10000" timeToLiveSeconds="10000" overflowToDisk="false">
+        <!-- 若创建网络缓存 则需要配置cacheEventListenerFactory
+            class   当前CacheEventListenerFactory对应的Java类全名称
+            properties 指定在构建CacheEventListenerFactory时需传入的属性键值对，多个属性之间默认用逗号分开，如：“prop1=value1,prop2=value2”
+        -->
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=false, replicateRemovals=true,asynchronousReplicationIntervalMillis=1000"
+        />
+        <!-- 若创建网络缓存 则需要配置bootstrapCacheLoaderFactory
+           class   当前bootstrapCacheLoaderFactory对应的Java类全名称
+       -->
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+    </cache>
+</ehcache>
