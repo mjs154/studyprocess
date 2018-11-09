@@ -1,0 +1,50 @@
+(1).vm后缀文件
+	基于java的velocity模板引擎的一种页面控制文件。通过特定的语法，Velocity可以获取在java语言中定义的对象，从而实现界面和java代码的真正分离，这意味着可以使用velocity替代jsp的开发模式。
+(2)velocity的基本用法
+	引入velocity-1.7.jar等依赖包；
+(3)初始化Velocity引擎
+	VelocityEngine ve = new VelocityEngine();
+
+    	ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+    
+	ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+    
+	ve.init();
+
+ bean注入:
+	<bean id="velocityEngine"
+          class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        	<property name="velocityProperties">
+            		<value>
+                		resource.loader=class
+                		class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            		</value>
+        	</property>
+    	</bean>
+(4)基本语法
+	a)变量的定义
+		#set($hello = "hello")   #set指令时括号内的字面字符串将解析和重新解释
+		#set($world = "world" )
+		#set($helloworld = "$hello $world" )
+
+		$helloworld 	输出：hello world
+		注:变量规范的写法为${helloworld},变量名称使用花括号括起来
+	b)变量的赋值
+		$hello = "hello"
+(5)velocity的宏(函数)
+	(1)定义
+		#macro(宏的名称 $参数1 $参数2 ...)
+			语句体
+		#end
+	(2)调用
+		#宏的名称($参数1 $参数2)
+(6)#Include
+	被#Include引入的文件，其内容不会被Velocity引擎解析，所以这些文件应该是静态模板，即不含有VTL的模板。使用#Include()指令时，参数是被双引号括起来的文件名或者是表示文件名的变量。如果有多个文件，以逗号隔开即可。比如#Include("a.gif", "b.html", $file)。
+(7)#parse
+	#parse用来在当前模板中引入并执行另一个(本地的)模板——可以是静态的，也可以是动态的——并把结果嵌入到当前位置。#Parse()指令的参数，可以是一个双引号括起来的文件名，也可以是一个变量，但是它不能接受多个参数。
+	#parse('/tcom/const.inc.vm') 
+(8)#Stop
+	#Stop指令会停止模板引擎的执行，并返回。
+
+	
+

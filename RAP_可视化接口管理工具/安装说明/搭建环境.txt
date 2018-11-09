@@ -1,0 +1,7 @@
+mysql、redis安装完毕；
+(1)将RAP项目导入intellij idea环境；
+(2)setting--Build,Execution,Deployment--->Application Servers
+	添加Tomcat服务器
+(3)在Edit Configurations + Tomcat Server 
+	添加RAP项目，
+(4)启动项目。

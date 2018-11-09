@@ -1,0 +1,14 @@
+(1)图表类型
+1 曲线图
+2 区域图
+3 饼图
+4 散点图
+5 气泡图
+6 动态图表
+7 组合图表
+8 3D 图
+9 测量图
+10 热点图
+11 树状图(Treemap)
+(2)引入highcharts.js依赖包
+(3)参照http://www.runoob.com/highcharts/highcharts-tutorial.html示例

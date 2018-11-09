@@ -1,0 +1,20 @@
+windows安装redis教程
+(1)解压Redis-x64-3.2.100.zip
+(2)cd至解压目录，运行：redis-server redis.windows.conf
+(3)服务运行成功；
+
+避免每次退出控制台导致服务停止
+设置成windows下的服务(cd到解压目录)：
+redis-server --service-install redis.windows-service.conf --loglevel verbose
+
+
+卸载服务：redis-server --service-uninstall
+
+开启服务：redis-server --service-start
+
+停止服务：redis-server --service-stop
+
+
+安装redis可视化工具
+redis-desktop-manager-0.8.8.384.exe
+
