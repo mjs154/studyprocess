@@ -1,0 +1,166 @@
+容器：镜像的运行时实例(实际执行时镜像会在内存中变成什么)
+镜像：是一种轻量级、可执行的独立软件包，它包含运行某个软件所需的所有内容。
+
+虚拟
+1.docker在centos上的安装
+	略
+	(1)版本查看
+	   docker --version
+	   	[root@host ~]# docker --version
+		Docker version 1.13.1, build 8633870/1.13.1
+2. 查找服务器的tomcat镜像信息
+	docker search tomcat 
+   下载镜像
+	  docker.io/tomcat
+
+    查看已下载的镜像
+	  docker images|grep tomcat
+3.获取镜像
+	docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签] 
+	例如：
+		docker pull ubuntu:16.04   若地址为空 默认从Docker Hub 的library/ubuntu 仓库中标签为 16.04 的镜像。
+4.查看所有image文件
+	docker image ls
+  删除image 文件
+	docker rmi [image id]
+	或 docker image rm [选项] <镜像1> [<镜像2> ...]
+
+5.dockerfile定制镜像
+	（1）新建文件夹 mkdir test
+	（2）进入文件路径 cd test
+	（3）新增Dockerfile文件 并写入
+		cat > Dockerfile << EOF
+		FROM nginx
+		RUN echo '<h1>Hello, Docker!</h1>' > /usr/share/nginx/html/index.html
+		EOF
+	FROM 指定基础镜像
+		例：FROM nginx； FROM scratch 意味着不以任何镜像为基础；
+	RUM 执行命令行命令
+		注：每执行一个命令，都会建立一个层级。
+	    RUN buildDeps='gcc libc6-dev make' \
+    		&& apt-get update \
+    		&& apt-get install -y $buildDeps \
+    		&& wget -O redis.tar.gz "http://download.redis.io/releases/redis-3.2.5.tar.gz" \
+    		&& mkdir -p /usr/src/redis \
+   	 	&& tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
+    		&& make -C /usr/src/redis \
+    		&& make -C /usr/src/redis install \
+    		&& rm -rf /var/lib/apt/lists/* \
+    		&& rm redis.tar.gz \
+    		&& rm -r /usr/src/redis \
+    		&& apt-get purge -y --auto-remove $buildDeps
+	   编译、安装 redis 可执行文件。		
+docker 定制Python + redis + Flask 镜像(参照 https://docs.docker-cn.com/)
+(1)创建空目录
+	mkdir pythondocker
+(2)创建Dockerfile文件
+	并输入一下内容：
+		# 将官方 Python 运行时用作父镜像
+		FROM python:2.7-slim
+		# 将工作目录设置为 /app
+		WORKDIR /app
+		# 将当前目录内容复制到位于 /app 中的容器中
+		ADD . /app
+		# 安装 requirements.txt 中指定的任何所需软件包
+		RUN pip install -r requirements.txt
+		# 使端口 80 可供此容器外的环境使用
+		EXPOSE 80
+		# 定义环境变量
+		ENV NAME World
+		# 在容器启动时运行 app.py
+		CMD ["python", "app.py"]
+(3)创建引用的内容文件requirements.txt   app.py
+	requirements.txt
+Flask
+Redis
+
+	app.py
+from flask import Flask
+from redis import Redis, RedisError
+import os
+import socket
+
+# Connect to Redis
+redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    try:
+        visits = redis.incr("counter")
+    except RedisError:
+        visits = "<i>cannot connect to Redis, counter disabled</i>"
+
+    html = "<h3>Hello {name}!</h3>" \
+           "<b>Hostname:</b> {hostname}<br/>" \
+           "<b>Visits:</b> {visits}"
+    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80)
+ (4)构建应用
+	docker build -t friendlyhello .
+
+ (5)查看构建的应用
+	docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED              SIZE
+friendlyhello           latest              2c28fb2309e8        About a minute ago   132 MB	
+
+ (6)运行应用
+	docker run -p 4000:80 friendlyhello
+ (7)访问
+	http://144.34.182.133:4000/
+ (8)查看进程
+	docker ps
+	docker ps -a  (查询所有进程)
+ (9)停止进程
+	docker stop [container id] (停止指定进程)
+	docker ps -a|awk '{print $1}'|xargs docker rm (停止所有进程记录)
+	
+ (10)共享镜像
+	登录：
+	docker login		
+	Username: mjs154
+	Password: 
+	Login Succeeded
+ (11)标记镜像
+	语法：docker tag image username/repository:tag   {username为镜像仓库名称也即用户名，repository为标记，tag为版本}
+	docker tag friendlyhello mjs/get-started:part1
+ (12)发布镜像
+	语法：docker push username/repository:tag   {username为镜像仓库名称，repository为标记，tag为版本}
+	docker push mjs154/get-started:part1
+
+ (13)远程镜像仓库拉取镜像并允许
+	docker run -p 4000:80 mjs154/get-started:part1
+
+ (14)运行多个服务进行负载均衡
+	(A)docker swarm init  {该命令为初始化一个集群，针对Docker引擎成为新创建的单节点集群中的管理器}
+	(B)创建docker-compose.yml文件
+		文件内容：
+version: "3"
+services:
+  web:
+    # 将 username/repo:tag 替换为您的名称和镜像详细信息
+    image: username/repository:tag
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+networks:
+  webnet:	
+	 (C)运行应用
+		docker stack deploy -c docker-compose.yml getstartedlab
+	 (D)查看启动多个容器的列表
+		docker stack ps getstartedlab
+	 (D)清除应用
+		docker stack rm getstartedlab
+	
