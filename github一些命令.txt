@@ -47,9 +47,10 @@
   # git config --global user.name "你的名字或昵称"
   # git config --global user.email "你的邮箱"
    git init
-   git remote add origin https://github.com/mjs154/springbootconfig.git
-   git clone https://github.com/mjs154/springbootconfig.git
+   git remote add origin https://github.com/mjs154/springbootconfig.git (下载在本地)
    git pull origin master
+
+   git clone https://github.com/mjs154/springbootconfig.git (仅克隆在本地)
 
 8、分支管理
      主分支master,一开始的时候，master分支是一条线，Git用master指向最新的提交，再用HEAD指向master，就能确定当前分支，以及当前分支的提交点;
