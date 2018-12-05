@@ -1,0 +1,26 @@
+(1)连接mysql
+	格式：mysql -h主机地址 -u用户名 -p用户密码
+	若为本机：mysql -u用户名 -p用户密码
+
+(2)建库
+	(A)创建数据库，格式: CREATE DATABASE epp_manager(数据库名)
+		或   CREATE DATABASE IF NOT EXISTS epp_manager default charset utf8 COLLATE utf8_general_ci;
+	(B)删除
+		DROP DATABASE epp_manager(数据库名);
+
+	(C)显示数据库列表
+		show databases;
+(3)建表
+	(A)使用数据库
+		use epp_manager;
+	(B)建表
+		CREATE TABLE tableA (id VARCHAR(20), extend1 CHAR(1));
+	(C)插入数据
+		INSERT INTO tableA values("hello", "world");
+	(D)将表中记录清空
+		DELETE FROM tableA;
+	(E)显示所有表
+		SHOW TABLES;
+(4)导入sql文件命令
+	格式:	USE epp_manager;
+		SOURCE d:/mysql.sql;	
