@@ -46,9 +46,9 @@
 					(2)git命令新增
 0.24	2018-11-15	新增[测试-单元测试]    mjs
 0.25	2018-12-05	(1)新增[数据库技术-索引]    
-                    (2)新增[JAVA技术-关键字]transient    mjs
-					(3)新增[Web应用-REST]    mjs	
-
+                    (2)新增[JAVA技术-关键字]transient  
+					(3)新增[Web应用-REST]    	
+					(4)新增[前端相关-JavaScript]正则表达式学习   mjs 
 
 
 
