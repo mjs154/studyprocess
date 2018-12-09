@@ -49,6 +49,7 @@
                     (2)新增[JAVA技术-关键字]transient  
 					(3)新增[Web应用-REST]    	
 					(4)新增[前端相关-JavaScript]正则表达式学习   mjs 
+0.26	2018-12-05	新增[java技术-多线程]volatile变量  mjs 
 
 
 
