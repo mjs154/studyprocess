@@ -1,3 +1,5 @@
 http://localhost:8080/v1/organizations/00003/licenses/9500
 http://localhost:8080/health
 
+http://localhost:8888/didispace/default
+
