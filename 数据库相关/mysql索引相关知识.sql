@@ -67,7 +67,8 @@ insert into PaymentInfo (AcceptId,TransNo,Status,CreatTime) values ("A000021", "
 --insert into PaymentInfo (AcceptId,TransNo,Status,CreatTime) values ("A000033", "T000003", 1, "20190324");
 
 --基本语法  explain sql语句
-explain select * from PaymentInfo where Extend = "723eee34";
+explain select * from PaymentInfo where TransNo like "%000001";
+explain select * from PaymentInfo where Status = 1 and CreatTime="20190324" ;
 explain select * from PaymentInfo where AcceptId = "A000001" union select * from PaymentInfo where TransNo="T000001";
 
 
