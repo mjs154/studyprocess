@@ -84,6 +84,13 @@
 	git reset -hard id
     (3)撤销，但是不会对代码修改进行撤销
 	git reset id
+	
+	
+10、移动文件
+	git mv docker学习.txt docker/docker学习.txt
+
+
+
        
    
     
